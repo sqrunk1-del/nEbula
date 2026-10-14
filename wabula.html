@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080912">
+  <title>nEbula</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f5f2ff;
+      --muted: #aaa8bd;
+      --purple: #a879ff;
+      --violet: #7545ef;
+      --blue: #101936;
+      --panel: rgba(16, 17, 31, .78);
+      --line: rgba(204, 184, 255, .14);
+      --round: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #080912;
+      background-image:
+        radial-gradient(ellipse at 78% 5%, rgba(70, 45, 137, .33), transparent 34rem),
+        radial-gradient(ellipse at 5% 42%, rgba(20, 47, 103, .28), transparent 33rem),
+        repeating-linear-gradient(125deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(35deg, rgba(0,0,0,.42) 0 2px, transparent 2px 5px),
+        linear-gradient(145deg, #0b0c15, #080912 58%, #0c1022);
+      background-attachment: fixed;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1160px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 27px 0; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 1.32rem; font-weight: 800; letter-spacing: -.06em; }
+    .brand-mark {
+      display: grid; place-items: center; width: 36px; height: 36px; border-radius: 13px;
+      color: white; background: radial-gradient(circle, #d9c4ff 0 7%, #a879ff 8% 20%, #6841db 53%, #17132c 75%);
+      box-shadow: 0 0 26px rgba(148, 103, 255, .42);
+    }
+    .brand-mark svg { width: 31px; height: 31px; overflow: visible; fill: #f8f3ff; filter: drop-shadow(0 0 5px rgba(255,255,255,.65)); }
+    .brand span:last-child { color: #c5a8ff; }
+    nav { display: flex; align-items: center; gap: 34px; color: #c0bdcf; font-size: .9rem; }
+    nav a:hover { color: white; }
+    .nav-cta { border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--ink); }
+
+    .hero { position: relative; overflow: hidden; padding: 91px 0 76px; }
+    .hero::before, .hero::after { content: ""; position: absolute; z-index: -1; border-radius: 50%; filter: blur(1px); pointer-events: none; }
+    .hero::before { width: 470px; height: 470px; right: -35px; top: 5px; border: 1px solid rgba(184, 151, 255, .15); box-shadow: 0 0 90px rgba(98, 60, 190, .14), inset 0 0 80px rgba(71, 70, 185, .08); }
+    .hero::after { width: 335px; height: 335px; right: 33px; top: 72px; border: 1px solid rgba(132, 164, 255, .13); background: radial-gradient(circle at 35% 30%, rgba(158, 107, 255, .22), rgba(17, 28, 66, .23) 55%, transparent 70%); }
+    .hero-content { max-width: 680px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; background: rgba(21, 20, 38, .68); color: #d3c5ff; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: #b995ff; box-shadow: 0 0 12px #a879ff; }
+    h1 { margin: 25px 0 19px; max-width: 660px; font-size: clamp(3.5rem, 8vw, 6.8rem); line-height: .97; letter-spacing: -.085em; font-weight: 750; }
+    h1 em { color: #bb98ff; font-style: normal; }
+    .hero-copy { max-width: 520px; color: var(--muted); font-size: 1.08rem; line-height: 1.75; }
+    .actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 49px; padding: 0 20px; border: 0; border-radius: 15px; font: inherit; font-size: .92rem; font-weight: 650; cursor: pointer; transition: transform .2s, border-color .2s, background .2s; }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: white; background: linear-gradient(120deg, #9c70ff, #7048eb); box-shadow: 0 9px 30px rgba(116, 72, 235, .26); }
+    .button-secondary { border: 1px solid var(--line); background: rgba(255,255,255,.035); color: #e4e1ee; }
+    .arrow { font-size: 1.1rem; }
+
+    .tab-button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--ink); background: rgba(255,255,255,.035); font: inherit; cursor: pointer; transition: .2s ease; }
+    .tab-button:hover, .tab-button[aria-selected="true"] { border-color: rgba(184, 151, 255, .55); background: rgba(128, 87, 230, .22); box-shadow: 0 5px 22px rgba(117, 69, 239, .16); }
+    .tab-icon { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 8px; background: rgba(184, 151, 255, .14); color: #d4bbff; font-size: .95rem; }
+    .tab-panel[hidden] { display: none; }
+    .content-page { min-height: 72vh; margin: 24px auto 70px; padding: 46px; border: 1px solid var(--line); border-radius: var(--round); background: linear-gradient(135deg, rgba(13, 17, 37, .97), rgba(30, 18, 51, .96)); box-shadow: 0 20px 70px rgba(0,0,0,.28); }
+    .page-kicker { color: #c5a8ff; font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .content-page h1 { margin: 12px 0; font-size: clamp(2.7rem, 7vw, 5.2rem); }
+    .page-intro { max-width: 620px; color: var(--muted); font-size: 1.05rem; line-height: 1.7; }
+    .browse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; margin-top: 34px; }
+    .browse-search { display: flex; gap: 10px; width: min(720px, 100%); margin: 10vh auto 0; padding: 10px; border: 1px solid var(--line); border-radius: 18px; background: rgba(7, 9, 20, .76); box-shadow: 0 14px 50px rgba(0,0,0,.25); }
+    .browse-search input { flex: 1; min-width: 0; padding: 14px 16px; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
+    .browse-search input::placeholder { color: var(--muted); }
+    .browse-search input:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; border-radius: 10px; }
+    .browse-search button { padding: 0 22px; border: 0; border-radius: 13px; background: linear-gradient(120deg, #9c70ff, #7048eb); color: white; font: inherit; font-weight: 650; cursor: pointer; }
+    .browse-note { margin: 13px auto 0; color: var(--muted); text-align: center; font-size: .85rem; }
+    .browse-card { min-height: 190px; padding: 23px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(145deg, rgba(35, 29, 62, .78), rgba(12, 17, 34, .9)); }
+    .browse-card .card-icon { width: 48px; height: 48px; }
+    .browse-card h2 { margin: 22px 0 8px; font-size: 1.12rem; }
+    .browse-card p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+    .watch-feature { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(230px, .85fr); gap: 25px; align-items: center; margin-top: 35px; }
+    .watch-art { position: relative; display: grid; place-items: center; min-height: 300px; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: radial-gradient(ellipse at 50% 45%, rgba(139, 91, 255, .45), transparent 37%), linear-gradient(145deg, #111a39, #15102a 70%, #090c18); }
+    .watch-art::before, .watch-art::after { content: ""; position: absolute; width: 230px; height: 230px; border: 1px solid rgba(205, 181, 255, .3); border-radius: 50%; transform: rotate(-25deg) scaleY(.43); }
+    .watch-art::after { width: 165px; height: 165px; transform: rotate(32deg) scaleY(.43); border-color: rgba(128, 174, 255, .4); }
+    .play-button { z-index: 1; display: grid; place-items: center; width: 68px; height: 68px; padding-left: 5px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(164, 123, 255, .8); color: white; font-size: 1.5rem; box-shadow: 0 0 45px rgba(157, 110, 255, .55); }
+    .watch-copy h2 { margin: 0 0 12px; font-size: 1.65rem; }
+    .watch-copy p { color: var(--muted); line-height: 1.7; }
+    @media (max-width: 760px) {
+      .content-page { padding: 30px 20px; }
+      .browse-grid { grid-template-columns: 1fr; }
+      .watch-feature { grid-template-columns: 1fr; }
+      .watch-art { min-height: 230px; }
+      nav { gap: 8px; }
+      .tab-button { padding: 8px 10px; font-size: .82rem; }
+      .tab-icon { width: 19px; height: 19px; }
+    }
+    .games-page {
+      display: flex; min-height: 72vh; margin: 24px auto 70px; overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--round);
+      background: linear-gradient(135deg, rgba(13, 17, 37, .97), rgba(30, 18, 51, .96));
+      box-shadow: 0 20px 70px rgba(0,0,0,.28);
+    }
+    .games-sidebar {
+      flex: 0 0 76px; min-height: 72vh; padding: 18px 10px;
+      display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+      background: rgba(0,0,0,.28); border-right: 1px solid var(--line);
+      overflow-y: auto;
+    }
+    .games-sidebar .sidebar-btn {
+      min-height: 45px; padding: 10px; border: 0; border-radius: 13px;
+      background: linear-gradient(135deg, #6845bd, #345a9b); color: white;
+      font-size: 17px; font-weight: 700; cursor: pointer; transition: .2s ease;
+    }
+    .games-sidebar .sidebar-btn:hover { background: #805ee0; transform: scale(1.04); }
+    .games-sidebar .sidebar-btn.empty { opacity: .4; cursor: default; }
+    .games-main { flex: 1; min-width: 0; padding: 30px 24px; }
+    .games-main h1 { margin: 0 0 18px; text-align: center; font-size: clamp(2rem, 5vw, 3rem); }
+    .games-subtitle { margin: 0 auto 18px; color: #d6d2e5; text-align: center; font-size: 1rem; font-weight: 400; }
+    .games-subtitle a { color: #c5a8ff; }
+    .games-subtitle a:hover { text-decoration: underline; }
+    .games-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 25px auto 34px; }
+    .games-tools input { width: min(100%, 420px); padding: 13px 16px; border: 1px solid var(--line); border-radius: 14px; outline: none; background: rgba(7, 9, 20, .8); color: var(--ink); font: inherit; }
+    .games-tools input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,121,255,.15); }
+    .games-tools button { padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(120deg, #8057dc, #345a9b); color: white; font: inherit; cursor: pointer; }
+    .games-page .letter-section { max-width: 900px; min-height: 100px; margin: 0 auto 34px; padding: 0 16px; }
+    .games-page .letter-section.empty { opacity: .5; }
+    .games-page .letter-header { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--line); color: white; font-size: 1.8rem; font-weight: 700; }
+    .games-page .buttons-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .games-page .empty-message { padding: 20px; color: var(--muted); font-style: italic; text-align: center; }
+    .games-page input[type="button"] { width: 100%; max-width: 600px; padding: 15px 20px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(120deg, rgba(104,69,189,.88), rgba(44,74,132,.9)); color: white; font: inherit; text-align: left; cursor: pointer; transition: .2s ease; }
+    .games-page input[type="button"]:hover { transform: translateY(-2px); background: linear-gradient(120deg, #805ee0, #416eaf); box-shadow: 0 8px 20px rgba(0,0,0,.24); }
+
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin: 5px 0 22px; }
+    .section-heading h2 { margin: 0; font-size: 1.55rem; letter-spacing: -.045em; }
+    .section-heading p { margin: 8px 0 0; color: var(--muted); font-size: .91rem; }
+    .section-link { color: #c5a8ff; font-size: .87rem; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; padding-bottom: 82px; }
+    .card { position: relative; overflow: hidden; min-height: 220px; padding: 24px; border: 1px solid var(--line); border-radius: var(--round); background: linear-gradient(145deg, rgba(25, 25, 43, .9), rgba(11, 14, 29, .84)); box-shadow: 0 18px 60px rgba(0,0,0,.17); }
+    .card::after { content: ""; position: absolute; width: 145px; height: 145px; right: -42px; top: -48px; border-radius: 50%; background: var(--glow, rgba(142, 100, 255, .2)); filter: blur(35px); }
+    .card-icon { display: grid; place-items: center; width: 43px; height: 43px; border-radius: 15px; border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.055); font-size: 1.18rem; }
+    .card h3 { margin: 20px 0 8px; font-size: 1.08rem; letter-spacing: -.025em; }
+    .card p { max-width: 290px; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.65; }
+    .card-violet { --glow: rgba(147, 83, 255, .26); }
+    .card-blue { --glow: rgba(53, 112, 255, .24); }
+    .card-pink { --glow: rgba(224, 86, 194, .19); }
+    .footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px 0 30px; border-top: 1px solid rgba(255,255,255,.08); color: #858397; font-size: .8rem; }
+    .footer strong { color: #c5a8ff; font-weight: 650; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 34px, 600px); }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 16px; }
+      nav { width: 100%; flex-wrap: wrap; justify-content: center; gap: 8px; }
+      nav a:not(.nav-cta) { display: none; }
+      .hero { padding: 70px 0 65px; }
+      .hero::before { width: 310px; height: 310px; right: -170px; top: 10px; }
+      .hero::after { width: 240px; height: 240px; right: -130px; top: 48px; }
+      .cards { grid-template-columns: 1fr; padding-bottom: 55px; }
+      .card { min-height: 190px; }
+      .games-page { margin-top: 12px; }
+      .games-sidebar { flex-basis: 58px; padding: 12px 6px; }
+      .games-sidebar .sidebar-btn { padding: 8px 4px; font-size: 15px; }
+      .games-main { padding: 24px 12px; }
+      .games-page .letter-section { padding: 0 4px; }
+    }
+    /* Minimal, playful layout inspired by the supplied reference. */
+    body {
+      background-color: #05060a;
+      background-image:
+        radial-gradient(ellipse at 50% 48%, rgba(54, 35, 105, .24), transparent 34rem),
+        repeating-linear-gradient(125deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(35deg, rgba(0,0,0,.58) 0 2px, transparent 2px 5px),
+        linear-gradient(145deg, #0b0c12, #05060a 60%, #0a1020);
+      background-attachment: fixed;
+    }
+    .topbar {
+      position: fixed; z-index: 20; left: 18px; top: 50%; transform: translateY(-50%);
+      width: auto; margin: 0; padding: 12px; border: 1px solid rgba(168,121,255,.32);
+      border-radius: 22px; background: rgba(14, 14, 20, .94);
+      box-shadow: 0 16px 50px rgba(0,0,0,.45);
+    }
+    .topbar > .brand { display: none; }
+    nav { display: flex; flex-direction: column; align-items: stretch; gap: 5px; }
+    .tab-button {
+      justify-content: flex-start; min-width: 116px; padding: 10px 12px; border: 0;
+      border-radius: 13px; color: #9da7bb; background: transparent; font-size: .9rem;
+    }
+    .tab-button:hover, .tab-button[aria-selected="true"] {
+      color: #e9ddff; border-color: transparent; background: rgba(117,69,239,.2); box-shadow: none;
+    }
+    .tab-icon { background: transparent; color: #a879ff; }
+    .hero {
+      display: grid; place-items: center; width: 100%; min-height: 100vh; padding: 40px 24px;
+      overflow: visible; text-align: center;
+    }
+    .hero::before { width: 320px; height: 320px; right: 50%; top: 50%; transform: translate(50%,-50%); border-color: rgba(168,121,255,.12); }
+    .hero::after { width: 230px; height: 230px; right: 50%; top: 50%; transform: translate(50%,-50%); }
+    .hero-content { display: grid; justify-items: center; max-width: none; }
+    .hero .eyebrow, .hero .hero-copy, .hero .actions { display: none; }
+    .hero h1 { margin: 22px 0 0; max-width: none; font-size: clamp(3.5rem, 10vw, 7.5rem); letter-spacing: -.08em; }
+    .hero h1 em { color: #a879ff; }
+    .hypernova { width: 86px; height: 86px; color: #bd98ff; filter: drop-shadow(0 0 24px rgba(168,121,255,.55)); }
+    .content-page, .games-page {
+      width: min(1080px, calc(100% - 190px)); margin: 34px 34px 34px 170px;
+      border-color: rgba(168,121,255,.2); border-radius: 22px;
+      background: rgba(11, 13, 23, .88); box-shadow: 0 20px 70px rgba(0,0,0,.38);
+    }
+    .content-page { min-height: calc(100vh - 68px); padding: clamp(26px, 5vw, 58px); }
+    .content-page h1 { margin: 0 0 28px; font-size: clamp(2.5rem, 6vw, 5rem); }
+    .page-kicker, .page-intro { display: none; }
+    .browse-grid { margin-top: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .browse-card { min-height: 150px; border-radius: 18px; background: rgba(255,255,255,.025); }
+    .browse-card h2 { margin-top: 18px; }
+    .browse-card p { display: none; }
+    .watch-feature { grid-template-columns: minmax(0, 1fr); margin-top: 10px; }
+    .watch-art { min-height: min(56vh, 440px); border-radius: 20px; }
+    .watch-copy h2, .watch-copy p, .watch-copy a { display: none; }
+    .games-page { min-height: calc(100vh - 68px); overflow: hidden; }
+    .games-sidebar { background: rgba(0,0,0,.23); }
+    .games-main h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+    .footer { display: none; }
+    @media (max-width: 760px) {
+      .topbar { top: auto; bottom: 14px; left: 50%; transform: translateX(-50%); padding: 7px; border-radius: 18px; }
+      nav { flex-direction: row; gap: 2px; }
+      .tab-button { min-width: 0; flex-direction: column; gap: 1px; padding: 7px 10px; font-size: .68rem; }
+      .tab-icon { width: 22px; height: 20px; }
+      .hero { min-height: 100svh; padding: 30px 18px 100px; }
+      .hero::before { width: 270px; height: 270px; }
+      .hero::after { width: 195px; height: 195px; }
+      .hypernova { width: 68px; height: 68px; }
+      .content-page, .games-page { width: calc(100% - 28px); min-height: calc(100vh - 110px); margin: 14px auto 94px; }
+      .browse-grid { grid-template-columns: 1fr; }
+      .browse-card { min-height: 110px; }
+      .games-page { margin-top: 12px; }
+      .games-sidebar { flex-basis: 58px; padding: 12px 6px; }
+      .games-sidebar .sidebar-btn { padding: 8px 4px; font-size: 15px; }
+      .games-main { padding: 24px 12px; }
+      .games-page .letter-section { padding: 0 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#home" aria-label="nEbula home" data-tab="home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M24 2 27 18 43 9 30 22 46 24 30 27 40 41 27 30 24 46 21 30 8 40 18 27 2 24 18 21 8 7 21 18Z"/><circle cx="24" cy="24" r="5"/></svg></span><span>nE<span>bula</span></span></a>
+    <nav aria-label="Main navigation">
+      <button class="tab-button" type="button" data-tab="home" aria-selected="true"><span class="tab-icon" aria-hidden="true">✦</span>Home</button>
+      <button class="tab-button" type="button" data-tab="browse" aria-selected="false"><span class="tab-icon" aria-hidden="true">◉</span>Browse</button>
+      <button class="tab-button" type="button" data-tab="watch" aria-selected="false"><span class="tab-icon" aria-hidden="true">▶</span>Watch</button>
+      <button class="tab-button" type="button" data-tab="games" aria-selected="false"><span class="tab-icon" aria-hidden="true">▦</span>Games</button>
+    </nav>
+  </header>
+
+  <main id="home-tab" class="tab-panel">
+    <section class="shell hero" id="home">
+      <div class="hero-content">
+        <svg class="hypernova" viewBox="0 0 100 100" role="img" aria-label="nEbula hypernova logo">
+          <defs><radialGradient id="nova-core"><stop stop-color="#fff"/><stop offset=".25" stop-color="#e4d3ff"/><stop offset="1" stop-color="#8b5cf6"/></radialGradient></defs>
+          <path d="M50 2 57 38 83 12 64 43 98 36 67 51 96 68 63 59 79 91 55 64 48 98 43 63 17 89 37 58 2 65 35 49 8 31 40 41Z" fill="currentColor" opacity=".88"/>
+          <circle cx="50" cy="50" r="13" fill="url(#nova-core)"/>
+          <circle cx="50" cy="50" r="20" fill="none" stroke="currentColor" stroke-opacity=".42"/>
+        </svg>
+        <h1>nE<span style="color:#a879ff">bula</span></h1>
+      </div>
+    </section>
+
+  </main>
+
+  <section class="shell content-page tab-panel" id="browse-tab" hidden aria-label="Browse">
+    <h1>Browse</h1>
+    <form class="browse-search" action="https://www.google.com/search" method="get" target="_blank" rel="noopener noreferrer">
+      <input type="search" name="q" aria-label="Search Google" placeholder="Search Google…" required>
+      <button type="submit">Search</button>
+    </form>
+    <p class="browse-note">Opens Google in a new tab.</p>
+  </section>
+
+  <section class="shell content-page tab-panel" id="watch-tab" hidden aria-label="Watch">
+    <h1>Watch</h1>
+    <div class="watch-feature">
+      <div class="watch-art" role="img" aria-label="Abstract purple and midnight-blue nebula illustration"><span class="play-button" aria-hidden="true">▶</span></div>
+    </div>
+  </section>
+
+  <section class="games-page tab-panel" id="games-tab" hidden aria-label="Games">
+    <div class="games-sidebar" id="sidebar"></div>
+    <div class="games-main">
+      <h1>UGS Files</h1>
+      <h2 class="games-subtitle">Files from
+        <a href="https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/" target="_blank" rel="noopener noreferrer">Ultimate Game Stash Google Doc</a>
+      </h2>
+      <h2 class="games-subtitle">Discord Server:
+        <a href="https://discord.gg/rmVsAqkpkA" target="_blank" rel="noopener noreferrer">https://discord.gg/rmVsAqkpkA</a>
+      </h2>
+      <div class="games-tools">
+        <input type="text" placeholder="Search..." id="searchInput" aria-label="Search games">
+        <button id="lolbutton" type="button" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">Click to load if it isnt loading</button>
+      </div>
+      <div id="sections-container"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
+  </section>
+
+  <footer class="shell footer" id="home-footer">
+    <span>© 2025 <strong>nEbula</strong></span>
+  </footer>
+  <script>
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    const panels = {
+      home: document.getElementById('home-tab'),
+      browse: document.getElementById('browse-tab'),
+      watch: document.getElementById('watch-tab'),
+      games: document.getElementById('games-tab')
+    };
+    const homeFooter = document.getElementById('home-footer');
+
+    function showTab(name) {
+      if (!panels[name]) return;
+      Object.entries(panels).forEach(([tab, panel]) => {
+        panel.hidden = tab !== name;
+      });
+      homeFooter.hidden = name !== 'home';
+      tabButtons.forEach((button) => {
+        if (button.matches('.tab-button')) {
+          button.setAttribute('aria-selected', String(button.dataset.tab === name));
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        showTab(button.dataset.tab);
+      });
+    });
+    document.querySelectorAll('nav a[href^="#"]').forEach((link) => {
+      link.addEventListener('click', () => showTab('home'));
+    });
+  </script>
+</body>
+</html>
